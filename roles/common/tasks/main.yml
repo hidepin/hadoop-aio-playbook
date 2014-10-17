@@ -1,0 +1,33 @@
+---
+# file: roles/common/tasks/main.yml
+
+- name: packages install
+  yum: name={{item}} state=present
+  with_items:
+    - openssh-clients
+    - libselinux-python
+    - ntp
+
+- name: disable selinux
+  selinux: state=disabled
+  when: ansible_selinux.config_mode is not defined or ansible_selinux.config_mode != "disabled"
+
+- name: ntp setting
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  notify:
+    - ntpd start
+    - restart ntpd
+
+- name: ip*tables stopped
+  service: name={{item}} state=stopped enabled=no
+  with_items:
+    - iptables
+    - ip6tables
+
+- name: generate hosts files
+  lineinfile: dest=/etc/hosts regexp='^{{item}}.*' line="{{item}} {{hostvars[item].ansible_fqdn}} {{hostvars[item].ansible_hostname}}" state=present
+  when: hostvars[item].ansible_fqdn is defined
+  with_items: groups['all']
+
+- name: dns disable
+  lineinfile: dest=/etc/nsswitch.conf regexp='^hosts{{colon}}[ ]*files dns$' line='hosts{{colon}}      files' state=present backrefs=yes

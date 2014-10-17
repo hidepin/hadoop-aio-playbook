@@ -1,0 +1,37 @@
+---
+# file: roles/hadoop_pesudo/tasks/main.yml
+
+- name: Oracle JDK install check
+  command: rpm -q jdk
+  register: inst_jdk
+  failed_when: inst_jdk.rc not in [0,1]
+  changed_when: inst_jdk.rc != 0
+  notify:
+    - copy Oracle JDK
+    - Oracle JDK install
+
+- name: Add hadoop group
+  group:
+    name={{item.group}}
+    gid={{item.gid}}
+  with_items: hadoop_user
+
+- name: Add hadoop user
+  user:
+    name="{{item.name}}"
+    password="{{item.password}}"
+    uid="{{item.uid}}"
+    group="{{item.group}}"
+    comment="{{item.name}}"
+  with_items: hadoop_user
+
+- name: Add a Cloudera reposigory key
+  rpm_key:
+    state=present
+    key=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+
+- name: install CDH5 package
+  yum:
+    name=http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm
+    state=present
+

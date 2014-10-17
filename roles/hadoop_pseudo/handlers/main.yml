@@ -1,0 +1,7 @@
+---
+# file: roles/hadoop_pseudo/handlers/main.yml
+- name: copy Oracle JDK
+  copy: src={{jdk}} dest=/tmp
+
+- name: Oracle JDK install
+  yum: name=/tmp/{{jdk}} state=present
