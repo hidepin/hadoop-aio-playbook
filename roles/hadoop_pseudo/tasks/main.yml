@@ -27,11 +27,27 @@
 
 - name: Add a Cloudera reposigory key
   rpm_key:
-    state=present
     key=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+    state=present
 
 - name: install CDH5 package
   yum:
     name=http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm
     state=present
+
+- name: cdh packages install
+  yum: name={{item}} state=present
+  with_items:
+    - hadoop-conf-pseudo
+    - hive
+
+- name: postgresql package install
+  yum: name={{item}} state=present
+  with_items:
+    - postgresql
+
+- name: ruby package install
+  yum: name={{item}} state=present
+  with_items:
+    - ruby
 
