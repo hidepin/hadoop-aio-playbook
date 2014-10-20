@@ -44,10 +44,22 @@
 - name: postgresql package install
   yum: name={{item}} state=present
   with_items:
+    - postgresql-server
+    - postgresql-devel
+
+- name: postgresql initdb
+  command: service postgresql initdb creates=/var/lib/pgsql/data/PG_VERSION
+
+- name: postgresql start
+  service: name={{item}} state=starteds enabled=yes
+  with_items:
     - postgresql
 
 - name: ruby package install
   yum: name={{item}} state=present
   with_items:
     - ruby
-
+    - ruby-devel
+    - rubygems
+    - git
+    - gcc
