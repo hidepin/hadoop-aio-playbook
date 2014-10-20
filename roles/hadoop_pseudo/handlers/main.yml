@@ -5,3 +5,8 @@
 
 - name: Oracle JDK install
   yum: name=/tmp/{{jdk}} state=present
+
+- name: postgresql restart
+  service: name={{item}} state=restarted
+  with_items:
+    - postgresql

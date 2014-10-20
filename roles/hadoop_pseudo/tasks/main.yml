@@ -51,9 +51,13 @@
   command: service postgresql initdb creates=/var/lib/pgsql/data/PG_VERSION
 
 - name: postgresql start
-  service: name={{item}} state=starteds enabled=yes
+  service: name={{item}} state=started enabled=yes
   with_items:
     - postgresql
+
+- name: postgresql access permissions
+  template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres group=postgres mode=600
+  notify: postgresql restart
 
 - name: ruby package install
   yum: name={{item}} state=present
