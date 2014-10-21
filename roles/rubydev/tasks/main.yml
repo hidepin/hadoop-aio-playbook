@@ -1,0 +1,16 @@
+---
+# file: roles/rubydev/tasks/main.yml
+
+- name: ruby package install
+  yum: name={{item}} state=present
+  with_items:
+    - centos-release-SCL
+    - ruby193-ruby
+    - ruby193-ruby-devel
+    - ruby193-rubygems
+    - ruby193-rubygem-bundler
+    - git
+    - gcc
+
+- name: ruby193 enable
+  template: src=enableruby193.sh.j2 dest=/etc/profile.d/enableruby193.sh owner=root group=root mode=644
