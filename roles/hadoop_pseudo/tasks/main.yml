@@ -59,11 +59,3 @@
   template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres group=postgres mode=600
   notify: postgresql restart
 
-- name: ruby package install
-  yum: name={{item}} state=present
-  with_items:
-    - ruby
-    - ruby-devel
-    - rubygems
-    - git
-    - gcc
