@@ -40,22 +40,38 @@
   with_items:
     - hadoop-conf-pseudo
     - hive
+    - hive-metastore
+    - hive-server2
 
 - name: postgresql package install
   yum: name={{item}} state=present
   with_items:
     - postgresql-server
     - postgresql-devel
+    - postgresql-jdbc
+    - python-psycopg2
 
 - name: postgresql initdb
   command: service postgresql initdb creates=/var/lib/pgsql/data/PG_VERSION
+
+- name: postgresql.conf update
+  template: src=postgresql.conf.j2 dest=/var/lib/pgsql/data/postgresql.conf owner=postgres group=postgres mode=600
+  notify: postgresql restart
+
+- name: postgresql access permissions
+  template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres group=postgres mode=600
+  notify: postgresql restart
 
 - name: postgresql start
   service: name={{item}} state=started enabled=yes
   with_items:
     - postgresql
 
-- name: postgresql access permissions
-  template: src=pg_hba.conf.j2 dest=/var/lib/pgsql/data/pg_hba.conf owner=postgres group=postgres mode=600
-  notify: postgresql restart
+- name: jdbc setup for hive
+  file: src=/usr/share/java/postgresql-jdbc.jar dest=/usr/lib/hive/lib/postgresql-jdbc.jar state=link
 
+- name: hive db user create
+  postgresql_user: name="hiveuser" password="hadoop123" login_host=127.0.0.1
+
+- name: hive db create
+  postgresql_db: name=metastore login_host=127.0.0.1
