@@ -10,3 +10,11 @@
   service: name={{item}} state=restarted
   with_items:
     - postgresql
+
+- name: create hive schema
+  command: psql -h 127.0.0.1 -U postgres -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.13.0.postgres.sql"
+
+- name: restart hive
+  service: name={{item}} state=restarted
+  with_items:
+    - hive-metastore

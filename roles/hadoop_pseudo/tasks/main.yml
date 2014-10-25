@@ -42,6 +42,7 @@
     - hive
     - hive-metastore
     - hive-server2
+    - zookeeper-server
 
 - name: postgresql package install
   yum: name={{item}} state=present
@@ -70,8 +71,33 @@
 - name: jdbc setup for hive
   file: src=/usr/share/java/postgresql-jdbc.jar dest=/usr/lib/hive/lib/postgresql-jdbc.jar state=link
 
+- name: zookeeper-server init
+  command: service zookeeper-server init creates=/var/lib/zookeeper/version-2
+
+- name: zookeeper start
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - zookeeper-server
+
 - name: hive db user create
-  postgresql_user: name="hiveuser" password="hadoop123" login_host=127.0.0.1
+  postgresql_user:
+    name="hiveuser"
+    password="hadoop123"
+    login_host=127.0.0.1
+    role_attr_flags=CREATEDB,CREATEROLE,SUPERUSER
 
 - name: hive db create
-  postgresql_db: name=metastore login_host=127.0.0.1
+  postgresql_db:
+    name=metastore
+    owner=hiveuser
+    login_host=127.0.0.1
+  notify: create hive schema
+
+- name: hive-site.xml update
+  template: src=hive-site.xml.j2 dest=/etc/hive/conf/hive-site.xml owner=root group=root mode=644
+  notify: restart hive
+
+- name: hive service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hive-metastore
