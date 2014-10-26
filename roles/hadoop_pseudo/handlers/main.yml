@@ -9,4 +9,4 @@
   service: name={{item}} state=restarted
   with_items:
     - hive-metastore
-
+    - hive-server2

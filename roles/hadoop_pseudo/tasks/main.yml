@@ -49,6 +49,11 @@
     - hive-server2
     - zookeeper-server
     - hive-jdbc
+    - impala
+    - impala-server
+    - impala-state-store
+    - impala-catalog
+    - impala-shell
 
 - name: hdfs namenode format check 
   command: ls /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current
@@ -173,3 +178,21 @@
   with_items:
     - hive-metastore
     - hive-server2
+
+- name: implate conf settings about hadoop
+  file: src=/etc/hadoop/conf/{{item}} dest=/etc/impala/conf/{{item}} state=link
+  with_items:
+    - hdfs-site.xml
+    - core-site.xml
+
+- name: implate conf settings about hadoop
+  file: src=/etc/hive/conf/{{item}} dest=/etc/impala/conf/{{item}} state=link
+  with_items:
+    - hive-site.xml
+
+- name: implara service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - impala-state-store
+    - impala-catalog
+    - impala-server
