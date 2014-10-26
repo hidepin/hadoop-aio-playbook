@@ -43,6 +43,7 @@
     - hive-metastore
     - hive-server2
     - zookeeper-server
+    - hive-jdbc
 
 - name: hdfs namenode format check 
   command: ls /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current
@@ -133,6 +134,20 @@
     login_host=127.0.0.1
   notify: create hive schema
 
+- name: Add hiveuser group
+  group: name=hiveuser
+
+- name: Add hiveuser user
+  user: name="hiveuer" group="hiveuser" comment="hiveuser" password="$6$SyJcx4.BrxC2qYqC$9xLeV5g.Vo80nhYupDfsHgra3Hy3IQBusU08zLFDJ3K0GIuJmSvyFQS2spLzRE5anYdqnZPswwwpkixH3bYdj1"
+
+- name: hive user direcrtory create
+  shell: sudo -u hdfs hadoop fs -mkdir -p /user/hiveuser && sudo -u hdfs hadoop fs -chown hiveuser /user/hiveuser
+  when: hdfs_structure.stdout.find('/user/hiveuser') == -1
+
+- name: hive warehouse direcrtory create
+  shell: sudo -u hdfs hadoop fs -mkdir -p /user/hive/warehouse && sudo -u hdfs hadoop fs -chown hiveuser /user/hive/warehouse
+  when: hdfs_structure.stdout.find('/user/hive/warehouse') == -1
+
 - name: hive-site.xml update
   template: src=hive-site.xml.j2 dest=/etc/hive/conf/hive-site.xml owner=root group=root mode=644
   notify: restart hive
@@ -141,3 +156,4 @@
   service: name={{item}} state=started enabled=yes
   with_items:
     - hive-metastore
+    - hive-server2
