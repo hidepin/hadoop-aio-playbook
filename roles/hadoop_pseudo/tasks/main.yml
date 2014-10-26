@@ -44,6 +44,46 @@
     - hive-server2
     - zookeeper-server
 
+- name: hdfs namenode format check 
+  command: ls /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current
+  register: hdfs_format
+  failed_when: hdfs_format.rc not in [0,1,2]
+  changed_when: hdfs_format.rc not in [0,1]
+  notify:
+    - hdfs namenode format
+
+- name: hadoop hdfs service start
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hadoop-hdfs-namenode
+    - hadoop-hdfs-secondarynamenode
+    - hadoop-hdfs-datanode
+
+- name: hdfs structure check 
+  command: sudo -u hdfs hadoop fs -ls -R /
+  register: hdfs_structure
+  failed_when: hdfs_structure.rc not in [0,1,2]
+  changed_when: hdfs_structure.stdout.find('/tmp') == -1
+
+- name: hdfs structure create
+  command: /usr/lib/hadoop/libexec/init-hdfs.sh
+  when: hdfs_structure.stdout.find('/tmp') == -1
+
+- name: hdfs user direcrtory create
+  shell: sudo -u hdfs hadoop fs -mkdir /user/{{item.name}} && sudo -u hdfs hadoop fs -chown {{item.name}} /user/{{item.name}}
+  when: hdfs_structure.stdout.find('/user/{{item.name}}') == -1
+  with_items: hadoop_user
+
+- name: hadoop-env.sh setup
+  template: src=hadoop-env.sh.j2 dest=/etc/hadoop/conf/hadoop-env.sh owner=root group=root mode=755
+
+- name: hadoop yarn service start
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hadoop-yarn-resourcemanager
+    - hadoop-yarn-nodemanager
+    - hadoop-mapreduce-historyserver
+
 - name: postgresql package install
   yum: name={{item}} state=present
   with_items:
