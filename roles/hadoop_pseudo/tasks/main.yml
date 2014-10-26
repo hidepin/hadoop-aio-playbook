@@ -41,7 +41,7 @@
     state=present
 
 - name: cdh version 5.latest to 5.1.3
-  lineinfile: dest=/etc/yum.repos.d/cloudera-cdh5.repo regexp="cdh/5/$" line="baseurl=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.1.3/" state=present
+  lineinfile: dest=/etc/yum.repos.d/cloudera-cdh5.repo regexp="cdh/5/$" line="baseurl=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.1.3/" state=present backrefs=yes
 
 - name: cdh packages install
   yum: name={{item}} state=present
