@@ -1,21 +1,9 @@
 ---
 # file: roles/hadoop_pseudo/handlers/main.yml
-- name: copy Oracle JDK
-  copy: src={{jdk}} dest=/tmp
-
-- name: Oracle JDK install
-  yum: name=/tmp/{{jdk}} state=present
-
 - name: postgresql restart
   service: name={{item}} state=restarted
   with_items:
     - postgresql
-
-- name: hdfs namenode format
-  shell: echo Y | service hadoop-hdfs-namenode init
-
-- name: create hive schema
-  command: psql -h 127.0.0.1 -U postgres -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.13.0.postgres.sql"
 
 - name: restart hive
   service: name={{item}} state=restarted

@@ -6,9 +6,14 @@
   register: inst_jdk
   failed_when: inst_jdk.rc not in [0,1]
   changed_when: inst_jdk.rc != 0
-  notify:
-    - copy Oracle JDK
-    - Oracle JDK install
+
+- name: copy Oracle JDK
+  copy: src={{jdk}} dest=/tmp
+  when: inst_jdk.rc != 0
+
+- name: Oracle JDK install
+  yum: name=/tmp/{{jdk}} state=present
+  when: inst_jdk.rc != 0
 
 - name: Add hadoop group
   group:
@@ -50,8 +55,10 @@
   register: hdfs_format
   failed_when: hdfs_format.rc not in [0,1,2]
   changed_when: hdfs_format.rc not in [0,1]
-  notify:
-    - hdfs namenode format
+
+- name: hdfs namenode format
+  shell: echo Y | service hadoop-hdfs-namenode init
+  when: hdfs_format.rc not in [0,1]
 
 - name: hadoop hdfs service start
   service: name={{item}} state=started enabled=yes
@@ -132,7 +139,16 @@
     name=metastore
     owner=hiveuser
     login_host=127.0.0.1
-  notify: create hive schema
+
+- name: hive schema check
+  command: psql -h 127.0.0.1 -U hiveuser -d metastore -c "\d"
+  register: hive_schema
+  failed_when: hive_schema.rc not in [0,1]
+  changed_when: hive_schem.stdout.find('/hogehoge') == -1
+
+- name: create hive schema
+  command: psql -h 127.0.0.1 -U postgres -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.13.0.postgres.sql"
+  when: hive_schem.stdout.find('/hogehoge') == -1
 
 - name: Add hiveuser group
   group: name=hiveuser
