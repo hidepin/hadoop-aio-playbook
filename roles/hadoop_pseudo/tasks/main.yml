@@ -144,11 +144,11 @@
   command: psql -h 127.0.0.1 -U hiveuser -d metastore -c "\d"
   register: hive_schema
   failed_when: hive_schema.rc not in [0,1]
-  changed_when: hive_schem.stdout.find('/hogehoge') == -1
+  changed_when: hive_schema.stdout.find('VERSION') == -1
 
 - name: create hive schema
-  command: psql -h 127.0.0.1 -U postgres -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.13.0.postgres.sql"
-  when: hive_schem.stdout.find('/hogehoge') == -1
+  command: psql -h 127.0.0.1 -U hiveuser -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.13.0.postgres.sql"
+  when: hive_schema.stdout.find('VERSION') == -1
 
 - name: Add hiveuser group
   group: name=hiveuser
