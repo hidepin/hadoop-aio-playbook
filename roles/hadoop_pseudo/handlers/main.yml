@@ -10,3 +10,11 @@
   with_items:
     - hive-metastore
     - hive-server2
+    - hive-server
+
+- name: restart impala
+  service: name={{item}} state=restarted
+  with_items:
+    - impala-server
+    - impala-state-store
+    - impala-catalog

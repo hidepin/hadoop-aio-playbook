@@ -50,6 +50,7 @@
     - hive
     - hive-metastore
     - hive-server2
+    - hive-server
     - zookeeper-server
     - hive-jdbc
     - impala
@@ -181,6 +182,7 @@
   with_items:
     - hive-metastore
     - hive-server2
+    - hive-server
 
 - name: implate conf settings about hadoop
   file: src=/etc/hadoop/conf/{{item}} dest=/etc/impala/conf/{{item}} state=link
@@ -192,6 +194,7 @@
   file: src=/etc/hive/conf/{{item}} dest=/etc/impala/conf/{{item}} state=link
   with_items:
     - hive-site.xml
+  notify: restart impala
 
 - name: implara service
   service: name={{item}} state=started enabled=yes
