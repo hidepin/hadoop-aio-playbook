@@ -29,4 +29,4 @@
 
 - name: docker option update
   template: src=docker.j2 dest=/etc/sysconfig/docker owner=root group=root mode=644
-  notify: restart docker
+#  notify: restart docker

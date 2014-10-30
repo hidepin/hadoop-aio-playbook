@@ -59,6 +59,14 @@
     - impala-catalog
     - impala-shell
 
+- name: core-site.xml setup
+  template: src=core-site.xml.j2 dest=/etc/hadoop/conf/core-site.xml.j2 owner=root group=root mode=755
+  notify: hadoop hdfs service restart
+
+- name: mapred-site.xml setup
+  template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf/mapred-site.xml.j2 owner=root group=root mode=755
+  notify: hadoop yarn service restart
+
 - name: hdfs namenode format check 
   command: ls /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current
   register: hdfs_format

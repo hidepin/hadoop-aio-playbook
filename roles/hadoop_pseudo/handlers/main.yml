@@ -1,5 +1,19 @@
 ---
 # file: roles/hadoop_pseudo/handlers/main.yml
+- name: hadoop hdfs service restart
+  service: name={{item}} state=restarted
+  with_items:
+    - hadoop-hdfs-namenode
+    - hadoop-hdfs-secondarynamenode
+    - hadoop-hdfs-datanode
+
+- name: hadoop yarn service restart
+  service: name={{item}} state=restarted
+  with_items:
+    - hadoop-yarn-resourcemanager
+    - hadoop-yarn-nodemanager
+    - hadoop-mapreduce-historyserver
+
 - name: postgresql restart
   service: name={{item}} state=restarted
   with_items:
