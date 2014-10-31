@@ -3,6 +3,6 @@
 - hosts: all
   roles:
     - common
-    - hadoop_pseudo
-    - rubydev
+#    - hadoop_pseudo
+#    - rubydev
     - docker
