@@ -30,10 +30,10 @@
     comment="{{item.name}}"
   with_items: hadoop_user
 
-- name: Add a Cloudera reposigory key
-  rpm_key:
-    key=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
-    state=present
+#- name: Add a Cloudera reposigory key
+#  rpm_key:
+#    key=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+#    state=present
 
 - name: install CDH5 package
   yum:
@@ -61,14 +61,14 @@
     - nfs-utils
     - nfs-utils-lib
     - hadoop-hdfs-nfs3
+    - hadoop-httpfs
 
 - name: hdfs setup
   template: src={{item}}.j2 dest=/etc/hadoop/conf/{{item}} owner=root group=root mode=755
   with_items:
     - core-site.xml
-    - hdfs.site.xml
+    - hdfs-site.xml
   notify: hadoop hdfs service restart
-  
 
 - name: mapred-site.xml setup
   template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf/mapred-site.xml owner=root group=root mode=755
@@ -222,3 +222,8 @@
   service: name={{item}} state=started enabled=yes
   with_items:
     - hadoop-hdfs-nfs3
+
+- name: httpfs service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hadoop-httpfs
