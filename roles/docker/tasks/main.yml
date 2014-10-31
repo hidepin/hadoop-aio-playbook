@@ -9,24 +9,30 @@
   yum: name={{item}} state=present
   with_items:
     - docker-io
-
-- name: ifcfg settings.
-  template: src={{item}}.j2 dest=/etc/sysconfig/network-scripts/{{item}} owner=root group=root mode=755
-  with_items:
-    - ifcfg-br0
-    - ifcfg-eth0
-  notify: network restart
-
-- name: check docker interface
-  command: brctl show
-  register: bridge_check
-  failed_when: bridge_check.rc not in [0,1]
-  changed_when: bridge_check.stdout.find('docker0') != -1
-
-- name: del docker interface
-  shell: ifconfig docker0 down && brctl delbr docker0
-  when: bridge_check.stdout.find('docker0') != -1
-
+#
+#- name: ifcfg settings.
+#  template: src={{item}}.j2 dest=/etc/sysconfig/network-scripts/{{item}} owner=root group=root mode=755
+#  with_items:
+#    - ifcfg-br0
+#    - ifcfg-eth0
+#  notify: network restart
+#
+#- name: check docker interface
+#  command: brctl show
+#  register: bridge_check
+#  failed_when: bridge_check.rc not in [0,1]
+#  changed_when: bridge_check.stdout.find('docker0') != -1
+#
+#- name: del docker interface
+#  shell: ifconfig docker0 down && brctl delbr docker0
+#  when: bridge_check.stdout.find('docker0') != -1
+#
 - name: docker option update
   template: src=docker.j2 dest=/etc/sysconfig/docker owner=root group=root mode=644
-#  notify: restart docker
+  notify: docker restart
+
+- name: docker service
+  service: name=docker state=started enabled=yes
+
+- name: docker enable
+  template: src=enabledocker.sh.j2 dest=/etc/profile.d/enabledocker.sh owner=root group=root mode=644

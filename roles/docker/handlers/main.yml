@@ -4,3 +4,6 @@
   service: name={{item}} state=restarted
   with_items:
     - network
+
+- name: docker restart
+  service: name=docker state=restarted

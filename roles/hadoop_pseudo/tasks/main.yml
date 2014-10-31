@@ -229,7 +229,7 @@
     - hadoop-hdfs-nfs3
 
 - name: hdfs mount dir
-  file: dest=/hdfs state=directory owner=root group=root mode=0755
+  file: dest=/hdfs state=directory
 
 - name: mount hdfs
   mount:
