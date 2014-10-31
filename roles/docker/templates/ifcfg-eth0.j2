@@ -1,9 +1,8 @@
 DEVICE=eth0
 TYPE=Ethernet
-UUID=0cc95587-95cf-427c-9e0c-cbf53d7661ee
 ONBOOT=yes
 NM_CONTROLLED=no
 BOOTPROTO=none
-HWADDR=00:0C:29:00:76:A5
+HWADDR={{ansible_default_ipv4.macaddress}}
 NAME="System eth0"
 BRIDGE=br0

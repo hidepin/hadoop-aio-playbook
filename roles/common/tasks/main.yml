@@ -18,14 +18,11 @@
     - ntpd start
     - restart ntpd
 
-- name: ip6tables stopped
+- name: ip*tables stopped
   service: name={{item}} state=stopped enabled=no
   with_items:
     - ip6tables
-
-- name: iptables flush rule
-  template: src=iptables.j2 dest=/etc/sysconfig/iptables owner=root group=root mode=600
-  notify: restart iptables
+    - iptables
 
 - name: generate hosts files
   lineinfile: dest=/etc/hosts regexp='^{{item}}.*' line="{{item}} {{hostvars[item].ansible_fqdn}} {{hostvars[item].ansible_hostname}}" state=present

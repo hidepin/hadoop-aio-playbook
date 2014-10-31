@@ -7,3 +7,6 @@
 
 - name: docker restart
   service: name=docker state=restarted
+
+- name: cgconfig restart
+  service: name=cgconfig state=restarted
