@@ -58,10 +58,17 @@
     - impala-state-store
     - impala-catalog
     - impala-shell
+    - nfs-utils
+    - nfs-utils-lib
+    - hadoop-hdfs-nfs3
 
-- name: core-site.xml setup
-  template: src=core-site.xml.j2 dest=/etc/hadoop/conf/core-site.xml owner=root group=root mode=755
+- name: hdfs setup
+  template: src={{item}}.j2 dest=/etc/hadoop/conf/{{item}} owner=root group=root mode=755
+  with_items:
+    - core-site.xml
+    - hdfs.site.xml
   notify: hadoop hdfs service restart
+  
 
 - name: mapred-site.xml setup
   template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf/mapred-site.xml owner=root group=root mode=755
@@ -210,3 +217,8 @@
     - impala-state-store
     - impala-catalog
     - impala-server
+
+- name: nfs service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hadoop-hdfs-nfs3
