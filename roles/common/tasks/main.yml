@@ -24,6 +24,9 @@
     - ip6tables
     - iptables
 
+- name: NetworkManager stopped
+  service: name=NetworkManager state=stopped enabled=no
+
 - name: generate hosts files
   lineinfile: dest=/etc/hosts regexp='^{{item}}.*' line="{{item}} {{hostvars[item].ansible_fqdn}} {{hostvars[item].ansible_hostname}}" state=present
   when: hostvars[item].ansible_fqdn is defined
