@@ -218,12 +218,23 @@
     - impala-catalog
     - impala-server
 
+- name: httpfs service
+  service: name={{item}} state=started enabled=yes
+  with_items:
+    - hadoop-httpfs
+
 - name: nfs service
   service: name={{item}} state=started enabled=yes
   with_items:
     - hadoop-hdfs-nfs3
 
-- name: httpfs service
-  service: name={{item}} state=started enabled=yes
-  with_items:
-    - hadoop-httpfs
+- name: hdfs mount dir
+  file: dest=/hdfs state=directory owner=root group=root mode=0755
+
+- name: mount hdfs
+  mount:
+    name=/hdfs
+    src={{ansible_fqdn}}:/
+    fstype=nfs
+    opts="vers=3,proto=tcp,nolock"
+    state=mounted
