@@ -228,6 +228,9 @@
   with_items:
     - hadoop-hdfs-nfs3
 
+- name: wait nfs service startup
+  pause: seconds=10
+
 - name: hdfs mount dir
   file: dest=/hdfs state=directory
 
