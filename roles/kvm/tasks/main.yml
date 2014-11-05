@@ -1,0 +1,18 @@
+---
+# file: roles/kvm/tasks/main.yml
+
+- name: packages install
+  yum: name={{item}} state=present
+  with_items:
+    - kemu-kvm
+    - libvirt
+    - virt-install
+    - virt-manager
+
+- name: ifcfg settings.
+  template: src={{item}}.j2 dest=/etc/sysconfig/network-scripts/{{item}} owner=root group=root mode=755
+  with_items:
+    - ifcfg-br0
+    - ifcfg-eth0
+  notify: network restart
+
