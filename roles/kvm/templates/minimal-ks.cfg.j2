@@ -17,6 +17,11 @@ bootloader --location=mbr --driveorder=sda --append="crashkernel=auto rhgb quiet
 # here so unless you clear all partitions first, this is
 # not guaranteed to work
 #clearpart --all --drives=sda
+zerombr
+part /boot --fstype="ext4" --ondisk=sda --size=500
+part swap --fstype="swap" --ondisk=sda --size=2064
+part / --fstype="ext4" --ondisk=sda --size=1 --grow
+shutdown
 
 #part /boot --fstype=ext4 --size=500
 #part pv.008002 --grow --size=1
