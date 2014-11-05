@@ -1,10 +1,5 @@
 ---
 # file: roles/docker/handlers/main.yml
-- name: network restart
-  service: name={{item}} state=restarted
-  with_items:
-    - network
-
 - name: docker restart
   service: name=docker state=restarted
 

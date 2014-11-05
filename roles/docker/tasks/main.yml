@@ -10,13 +10,6 @@
   with_items:
     - docker-io
 
-- name: ifcfg settings.
-  template: src={{item}}.j2 dest=/etc/sysconfig/network-scripts/{{item}} owner=root group=root mode=755
-  with_items:
-    - ifcfg-br0
-    - ifcfg-eth0
-  notify: network restart
-
 - name: check docker interface
   command: brctl show
   register: bridge_check

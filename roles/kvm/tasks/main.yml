@@ -16,3 +16,5 @@
     - ifcfg-eth0
   notify: network restart
 
+- name: libvirtd service
+  service: name=libvirtd state=started enabled=yes
