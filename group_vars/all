@@ -3,6 +3,9 @@ sudo: no
 colon: ":"
 ntp_server_ip: 192.168.0.1
 jdk: jdk-7u71-linux-x64.rpm
+common_user:
+  # password="hidepin123"
+  - { name: 'hidepin', password: '$6$rounds=40000$YYZFvburrlpmjC6k$mV7w.sVyA2mBC0x7x7Z/FKFb8dqLJvMZ5KB5FLDybWHZ11daSybpmhHRAfLSuB3RM6JXKJKp9fBSDIWAcN2zp1', uid: '1001', group: 'hidepin', gid: '1001' }
 hadoop_user:
   # password="hadoop123"
   - { name: 'hadoop', password: '$6$D2SUQDvxua6oxQ$/XnR12xFXmaCLLxbr9R4qbntWIQBKawEliGYgFgeOsXBTiN9Jd7bR0ErSqd9SpCL7acMovA7XWNiIph0BJzA40', uid: '2001', group: 'hadoop', gid: '2001' }

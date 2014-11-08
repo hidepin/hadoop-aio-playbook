@@ -1,5 +1,19 @@
 ---
 # file: roles/common/tasks/main.yml
+- name: Add hadoop group
+  group:
+    name={{item.group}}
+    gid={{item.gid}}
+  with_items: common_user
+
+- name: Add hadoop user
+  user:
+    name="{{item.name}}"
+    password="{{item.password}}"
+    uid="{{item.uid}}"
+    group="{{item.group}}"
+    comment="{{item.name}}"
+  with_items: common_user
 
 - name: packages install
   yum: name={{item}} state=present
