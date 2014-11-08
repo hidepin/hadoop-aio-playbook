@@ -9,28 +9,24 @@ network --onboot yes --device eth0 --bootproto static --ip 192.168.0.18 --netmas
 rootpw  --iscrypted $6$wsuprWNE1CHmRHWa$tnTJQlC/1K8evZZDZZ3xYtA3f2L1S3HtL0lQHJZR3xVQVALzR9p2oQEoWbwGVistmUKsDVgb16PTWXyH1SCQK/
 firewall --service=ssh
 authconfig --enableshadow --passalgo=sha512
-selinux --enforcing
+selinux --disabled
 timezone Asia/Tokyo
-bootloader --location=mbr --driveorder=sda --append="crashkernel=auto rhgb quiet"
+bootloader --location=mbr --driveorder=vda --append="crashkernel=auto rhgb quiet"
 # The following is the partition information you requested
 # Note that any partitions you deleted are not expressed
 # here so unless you clear all partitions first, this is
 # not guaranteed to work
-#clearpart --all --drives=sda
+clearpart --all --drives=vda
 zerombr
-part /boot --fstype="ext4" --ondisk=sda --size=500
-part swap --fstype="swap" --ondisk=sda --size=2064
-part / --fstype="ext4" --ondisk=sda --size=1 --grow
-shutdown
 
-#part /boot --fstype=ext4 --size=500
-#part pv.008002 --grow --size=1
+part /boot --fstype=ext4 --size=500
+part pv.008002 --grow --size=1
 
-#volgroup vg_testcentos66 --pesize=4096 pv.008002
-#logvol / --fstype=ext4 --name=lv_root --vgname=vg_testcentos66 --grow --size=1024 --maxsize=51200
-#logvol swap --name=lv_swap --vgname=vg_testcentos66 --grow --size=4032 --maxsize=4032
+volgroup vg_centos66 --pesize=4096 pv.008002
+logvol / --fstype=ext4 --name=lv_root --vgname=vg_centos66 --grow --size=1
+logvol swap --name=lv_swap --vgname=vg_centos66 --grow --size=4032 --maxsize=4032
 
-repo --name="CentOS"  --baseurl=cdrom:sr0 --cost=100
+poweroff
 
 %packages
 @core
