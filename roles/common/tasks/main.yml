@@ -1,12 +1,12 @@
 ---
 # file: roles/common/tasks/main.yml
-- name: Add hadoop group
+- name: Add common group
   group:
     name={{item.group}}
     gid={{item.gid}}
   with_items: common_user
 
-- name: Add hadoop user
+- name: Add common user
   user:
     name="{{item.name}}"
     password="{{item.password}}"
