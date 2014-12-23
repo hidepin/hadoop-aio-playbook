@@ -1,6 +1,5 @@
 ---
 # file: roles/hadoop_pesudo/tasks/main.yml
-
 - name: Oracle JDK install check
   command: rpm -q jdk
   register: inst_jdk
@@ -30,18 +29,10 @@
     comment="{{item.name}}"
   with_items: hadoop_user
 
-#- name: Add a Cloudera reposigory key
-#  rpm_key:
-#    key=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
-#    state=present
-
 - name: install CDH5 package
   yum:
     name=http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm
     state=present
-
-- name: cdh version 5.latest to 5.1.3
-  lineinfile: dest=/etc/yum.repos.d/cloudera-cdh5.repo regexp="cdh/5/$" line="baseurl=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.1.3/" state=present backrefs=yes
 
 - name: cdh packages install
   yum: name={{item}} state=present
@@ -74,6 +65,9 @@
   template: src=mapred-site.xml.j2 dest=/etc/hadoop/conf/mapred-site.xml owner=root group=root mode=755
   notify: hadoop yarn service restart
 
+- name: hadoop-env.sh setup
+  template: src=hadoop-env.sh.j2 dest=/etc/hadoop/conf/hadoop-env.sh owner=root group=root mode=755
+
 - name: hdfs namenode format check 
   command: ls /var/lib/hadoop-hdfs/cache/hdfs/dfs/name/current
   register: hdfs_format
@@ -105,9 +99,6 @@
   shell: sudo -u hdfs hadoop fs -mkdir /user/{{item.name}} && sudo -u hdfs hadoop fs -chown {{item.name}} /user/{{item.name}}
   when: hdfs_structure.stdout.find('/user/{{item.name}}') == -1
   with_items: hadoop_user
-
-- name: hadoop-env.sh setup
-  template: src=hadoop-env.sh.j2 dest=/etc/hadoop/conf/hadoop-env.sh owner=root group=root mode=755
 
 - name: hadoop yarn service start
   service: name={{item}} state=started enabled=yes
@@ -174,12 +165,6 @@
   command: psql -h 127.0.0.1 -U hiveuser -d metastore -c "\i /usr/lib/hive/scripts/metastore/upgrade/postgres/hive-schema-0.12.0.postgres.sql"
   when: hive_schema.stdout.find('VERSION') == -1
 
-- name: Add hiveuser group
-  group: name=hiveuser
-
-- name: Add hiveuser user
-  user: name="hiveuser" group="hiveuser" comment="hiveuser" password="$6$SyJcx4.BrxC2qYqC$9xLeV5g.Vo80nhYupDfsHgra3Hy3IQBusU08zLFDJ3K0GIuJmSvyFQS2spLzRE5anYdqnZPswwwpkixH3bYdj1"
-
 - name: hive user direcrtory create
   shell: sudo -u hdfs hadoop fs -mkdir -p /user/hiveuser && sudo -u hdfs hadoop fs -chown hiveuser /user/hiveuser
   when: hdfs_structure.stdout.find('/user/hiveuser') == -1
@@ -204,12 +189,13 @@
   with_items:
     - hdfs-site.xml
     - core-site.xml
+  notify: impala restart
 
 - name: implate conf settings about hadoop
   file: src=/etc/hive/conf/{{item}} dest=/etc/impala/conf/{{item}} state=link
   with_items:
     - hive-site.xml
-  notify: restart impala
+  notify: impala restart
 
 - name: implara service
   service: name={{item}} state=started enabled=yes

@@ -26,7 +26,7 @@
     - hive-server2
     - hive-server
 
-- name: restart impala
+- name: impala restart
   service: name={{item}} state=restarted
   with_items:
     - impala-server
