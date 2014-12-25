@@ -232,5 +232,5 @@
     state=mounted
 
 - name: netfs setup
-  template: src=etc_sysconfig_netfs.j2 dest=/etc/sysconfig/netfs owner=root group=root mode=644
+  template: src=etc_chkconfig_d_netfs.j2 dest=/etc/chkconfig.d/netfs owner=root group=root mode=644
   notify: netfs rechkconfig
