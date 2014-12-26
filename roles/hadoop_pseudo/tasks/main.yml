@@ -34,6 +34,9 @@
     name=http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm
     state=present
 
+- name: cdh version 5.latest to 5.1.4
+  lineinfile: dest=/etc/yum.repos.d/cloudera-cdh5.repo regexp="cdh/5/$" line="baseurl=http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.1.4/" state=present backrefs=yes
+
 - name: cdh packages install
   yum: name={{item}} state=present
   with_items:
