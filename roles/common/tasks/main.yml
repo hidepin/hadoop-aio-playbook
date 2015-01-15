@@ -21,12 +21,6 @@
     - iptables
     - ip6tables
 
-- name: ip*tables stopped
-  service: name={{item}} state=stopped enabled=no
-  with_items:
-    - ip6tables
-    - iptables
-
 - name: generate hosts files
   lineinfile: dest=/etc/hosts regexp='^{{item}}.*' line="{{item}} {{hostvars[item].ansible_fqdn}} {{hostvars[item].ansible_hostname}}" state=present
   when: hostvars[item].ansible_fqdn is defined
